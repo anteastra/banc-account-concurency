@@ -15,6 +15,10 @@ public class LockExample {
     public static void main(String[] args) throws InterruptedException {
         final Account a = new Account(2000);
         final Account b = new Account(4000);
+
+        System.out.println("a: " + a.getBalance());
+        System.out.println("b: " + b.getBalance());
+
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -42,18 +46,23 @@ public class LockExample {
                 if (lock2.tryLock(WAIT_SEC, TimeUnit.SECONDS)) {
                     try {
                         if (from.getBalance() < amount) throw new InsufficientFundsException();
+                        System.out.println("transfer: " + amount + ", from " + from.getBalance() + ", to " + to.getBalance());
                         from.withdraw(amount);
                         to.deposit(amount);
                     } finally {
                         lock2.unlock();
                     }
                 } else {
+                    to.incFailedTransfer();
+                    from.incFailedTransfer();
                     System.out.println("cant lock 'to' account");
                 }
             } finally {
                 lock1.unlock();
             }
         } else {
+            to.incFailedTransfer();
+            from.incFailedTransfer();
             System.out.println("cant lock 'from' account");
         }
 
