@@ -9,11 +9,18 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Account {
 
-    private AtomicInteger failCounter;
+    private String name;
+
+    private AtomicInteger failCounter = new AtomicInteger(0);
     private int balance;
     private Lock lock = new ReentrantLock();
 
     public Account(int balance) {
+        this.balance = balance;
+    }
+
+    public Account(String name, int balance) {
+        this.name = name;
         this.balance = balance;
     }
 
@@ -39,5 +46,9 @@ public class Account {
 
     public int getFailCounter() {
         return failCounter.get();
+    }
+
+    public String getName() {
+        return name;
     }
 }
